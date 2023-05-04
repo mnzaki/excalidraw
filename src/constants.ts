@@ -19,7 +19,7 @@ export const isBrave = () =>
 
 export const APP_NAME = "Excalidraw";
 
-export const DRAGGING_THRESHOLD = 10; // px
+export const DRAGGING_THRESHOLD = 20; // px
 export const LINE_CONFIRM_THRESHOLD = 8; // px
 export const ELEMENT_SHIFT_TRANSLATE_AMOUNT = 5;
 export const ELEMENT_TRANSLATE_AMOUNT = 1;

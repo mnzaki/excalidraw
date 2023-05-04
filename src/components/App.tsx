@@ -4593,10 +4593,17 @@ class App extends React.Component<AppProps, AppState> {
       // to ensure we don't create a 2-point arrow by mistake when
       // user clicks mouse in a way that it moves a tiny bit (thus
       // triggering pointermove)
+      const distance = distance2d(
+        pointerCoords.x,
+        pointerCoords.y,
+        pointerDownState.origin.x,
+        pointerDownState.origin.y,
+      );
       if (
         !pointerDownState.drag.hasOccurred &&
         (this.state.activeTool.type === "arrow" ||
-          this.state.activeTool.type === "line")
+          this.state.activeTool.type === "line" ||
+          this.state.activeTool.type === "selection")
       ) {
         if (
           distance2d(

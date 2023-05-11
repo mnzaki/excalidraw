@@ -3401,7 +3401,7 @@ class App extends React.Component<AppProps, AppState> {
   };
   // set touch moving for mobile context menu
   private handleTouchMove = (event: React.TouchEvent<HTMLCanvasElement>) => {
-    invalidateContextMenu = true;
+    //invalidateContextMenu = true;
   };
 
   handleHoverSelectedLinearElement(
@@ -3576,6 +3576,11 @@ class App extends React.Component<AppProps, AppState> {
     });
     this.savePointer(event.clientX, event.clientY, "down");
 
+    // State for the duration of a pointer interaction, which starts with a
+    // pointerDown event, ends with a pointerUp event (or another pointerDown)
+    const pointerDownState = this.initialPointerDownState(event);
+    this.maybeOpenContextMenuAfterPointerDownOnTouchDevices(event, pointerDownState);
+
     if (this.handleCanvasPanUsingWheelOrSpaceDrag(event)) {
       return;
     }
@@ -3593,10 +3598,6 @@ class App extends React.Component<AppProps, AppState> {
       return;
     }
 
-    // State for the duration of a pointer interaction, which starts with a
-    // pointerDown event, ends with a pointerUp event (or another pointerDown)
-    const pointerDownState = this.initialPointerDownState(event);
-
     if (this.handleDraggingScrollBar(event, pointerDownState)) {
       return;
     }
@@ -3605,7 +3606,6 @@ class App extends React.Component<AppProps, AppState> {
     this.updateBindingEnabledOnPointerMove(event);
 
     const handledSelection = this.handleSelectionOnPointerDown(event, pointerDownState)
-    this.maybeOpenContextMenuAfterPointerDownOnTouchDevices(event, pointerDownState);
     if (handledSelection) {
       return;
     }
@@ -3734,7 +3734,7 @@ class App extends React.Component<AppProps, AppState> {
     pointerDownState: PointerDownState,
   ): void => {
     // deal with opening context menu on touch devices
-    if (event.pointerType === "touch") {
+    if (!pointerDownState.drag.hasOccurred && event.pointerType === "touch") {
       invalidateContextMenu = false;
       if (touchTimeout) {
         // If there's already a touchTimeout, then this is another
@@ -3754,7 +3754,7 @@ class App extends React.Component<AppProps, AppState> {
         // if the touch is not moving
         touchTimeout = window.setTimeout(() => {
           touchTimeout = 0;
-          if (!invalidateContextMenu) {
+          if (!invalidateContextMenu && !pointerDownState.drag.hasOccurred) {
             this.handleCanvasContextMenu(event);
           }
         }, TOUCH_CTX_MENU_TIMEOUT);
